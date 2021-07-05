@@ -26,6 +26,7 @@ async def sendMessage(channelID, **args):
 
 @bot.event
 async def on_ready():
+    await bot.change_presence(activity=discord.Game(name="Beat Saber Modcharts"))
     print("bot is ready")
 
 @bot.command()
