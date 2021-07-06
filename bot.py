@@ -53,26 +53,45 @@ async def refreshCommands(ctx:cmds.Context):
     else:
         os.system("rm -rf ./commands/__pycache__")
 
+    diff = """```diff
+"""
     for x in allCommands:
-        reload(x)      
+        try:
+            reload(x)
+        except:
+            pass
 
     filesChanged = []
     for x in allCommandsContext:
+        if not x.startswith("#"):
+            filesChanged.append(1)
+            continue
+            
         fileItem = x.splitlines()[0][1:]
         if os.path.exists(f"./commands/{fileItem}"):
-            filesChanged.append(open(f"./commands/{fileItem}").read())
+            fileContent = open(f"./commands/{fileItem}").read()
+            filesChanged.append(fileContent)
         else:
             filesChanged.append(0)
 
+    if len([x for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")]) > len(filesChanged):
+        for newCommand in [x for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")]:
+            newCommandFile = open(f'./commands/{newCommand}').read()
+            if newCommandFile not in filesChanged:
+                if newCommandFile.startswith("#"):
+                    diff += f"+ new command commands.{newCommandFile.splitlines()[0][1:].split('.')[0]}\n"
+                else:
+                    diff += f"- /!\\ error detected in new command {allCommands[x].__name__}: file supposed to start with #(filename)\n"
 
-    diff = """```diff
-"""
+
     for x in range(len(filesChanged)):
         if x == len(allCommandsContext):
             break
         
         if filesChanged[x] == 0:
             diff += f"- command {allCommands[x].__name__} removed\n"
+        elif filesChanged[x] == 1:
+            diff += f"- /!\\ error detected in changed command {allCommands[x].__name__}: file supposed to start with #(filename). (If it was fixed, make sure to reload again for this change to take effect.)\n"
         else:
             charDiffCount = len(filesChanged[x]) - len(allCommandsContext[x])
             if charDiffCount < 0:
@@ -84,7 +103,9 @@ async def refreshCommands(ctx:cmds.Context):
         import_module(f"commands.{x.split('.')[0]}") for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")
     ]
 
-    allCommandsContext = list(filesChanged)
+    allCommandsContext = [
+        open(f"./commands/{x}").read() for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")
+    ]
     if diff == "```diff\n```":
         await ctx.send("Refreshed commands, nothing changed.")
     else:
@@ -115,7 +136,7 @@ async def on_message(message:discord.Message):
         await message.channel.send("**How do I get started making Noodle Extensions levels?**\nYou can check out <#847956650090168330>. It explains in as much detail as possible how you can get started. If you have any questions remaining after reading it, feel free to ask!")
         return
     elif isListOfWordsInString("give have can get want".split(), message.content.lower()):
-        if isListOfWordsInString("admin mod perms moderator".split(), message.content.lower()):
+        if isListOfWordsInString("admin mod moderator".split(), message.content.lower()):
             await message.channel.send("No you will not get mod perms.")
 
     await bot.process_commands(message)
