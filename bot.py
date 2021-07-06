@@ -13,6 +13,9 @@ bot = cmds.Bot("NE!", None, case_insensitive=True)
 allCommands = [
     import_module(f"commands.{x.split('.')[0]}") for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")
 ]
+allCommandsContext = [
+    open(f"./commands/{x}").read() for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")
+]
 
 async def sendMessage(channelID, **args):
     oauth = {
@@ -24,6 +27,16 @@ async def sendMessage(channelID, **args):
 
     print(r.text)
 
+def isListOfWordsInString(words, string, maxMatch=1, substractOnNotMatching=False):
+    matches = 0
+    for x in words:
+        if x in string:
+            matches += 1
+        else:
+            if substractOnNotMatching:
+                matches -= 1
+    return matches >= maxMatch
+
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name="Beat Saber Modcharts"))
@@ -33,6 +46,7 @@ async def on_ready():
 @cmds.has_any_role("Founder", "Moderator", "Staff")
 async def refreshCommands(ctx:cmds.Context):
     global allCommands
+    global allCommandsContext
 
     if os.sys.platform == "win32":
         os.system("rmdir /Q /S .\\commands\\__pycache__")
@@ -42,16 +56,44 @@ async def refreshCommands(ctx:cmds.Context):
     for x in allCommands:
         reload(x)      
 
+    filesChanged = []
+    for x in allCommandsContext:
+        fileItem = x.splitlines()[0][1:]
+        if os.path.exists(f"./commands/{fileItem}"):
+            filesChanged.append(open(f"./commands/{fileItem}").read())
+        else:
+            filesChanged.append(0)
+
+
+    diff = """```diff
+"""
+    for x in range(len(filesChanged)):
+        if x == len(allCommandsContext):
+            break
+        
+        if filesChanged[x] == 0:
+            diff += f"- command {allCommands[x].__name__} removed\n"
+        else:
+            charDiffCount = len(filesChanged[x]) - len(allCommandsContext[x])
+            if charDiffCount < 0:
+                diff += f"- {abs(charDiffCount)} removals on {allCommands[x].__name__}\n"
+            elif charDiffCount > 0:
+                diff += f"+ {charDiffCount} additions on {allCommands[x].__name__}\n"
+    diff += "```"
     allCommands = [
         import_module(f"commands.{x.split('.')[0]}") for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")
     ]
 
-    await ctx.send("Refreshed commands.")
+    allCommandsContext = list(filesChanged)
+    if diff == "```diff\n```":
+        await ctx.send("Refreshed commands, nothing changed.")
+    else:
+        await ctx.send(f"Refreshed commands, here's what changed: {diff}")
 
 @bot.event
 async def on_message(message:discord.Message):
 
-    if message.author.bot or message.author == bot.user:
+    if message.author.bot or message.author._user == bot.user:
         return
 
     if message.content.startswith("NE!"):
@@ -68,6 +110,14 @@ async def on_message(message:discord.Message):
     
             return
     
+    # FAQ area
+    if isListOfWordsInString("started start noodle extensions".split(), message.content.lower(), 3):
+        await message.channel.send("**How do I get started making Noodle Extensions levels?**\nYou can check out <#847956650090168330>. It explains in as much detail as possible how you can get started. If you have any questions remaining after reading it, feel free to ask!")
+        return
+    elif isListOfWordsInString("give have can get want".split(), message.content.lower()):
+        if isListOfWordsInString("admin mod perms moderator".split(), message.content.lower()):
+            await message.channel.send("No you will not get mod perms.")
+
     await bot.process_commands(message)
 
 
