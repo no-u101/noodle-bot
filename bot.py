@@ -133,28 +133,13 @@ async def on_message(message:discord.Message):
             return
     
     # FAQ area
-    if isListOfWordsInString("started start noodle extensions".split(), message.content.lower(), 3):
+    if isListOfWordsInString("started start noodle extensions how making make to".split(), message.content.lower(), 3):
         await message.channel.send("**How do I get started making Noodle Extensions levels?**\nYou can check out <#847956650090168330>. It explains in as much detail as possible how you can get started. If you have any questions remaining after reading it, feel free to ask!")
         return
     elif isListOfWordsInString("give have can get want".split(), message.content.lower()):
         if isListOfWordsInString("admin mod moderator".split(), message.content.lower()):
             await message.channel.send("No you will not get mod perms.")
-    elif "testInteraction" == message.content:
-        await sendMessage(message.channel.id, content="This is a test button", components=[
-            {
-                "type":1,
-                "components":[
-                    {
-                        "type":2,
-                        "style":1,
-                        "label":"Button",
-                        "custom_id":"test"
-                    }
-                ]
-            }
-        ]
-        )
-
+            return
     await bot.process_commands(message)
 
 bot.run(data["token"])
