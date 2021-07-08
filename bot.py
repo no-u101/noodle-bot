@@ -3,12 +3,13 @@ import json
 import asyncio
 import discord
 import requests
-from importlib import import_module, reload
 from discord.ext import commands as cmds
+from flask import Flask, request, jsonify
+from importlib import import_module, reload
 
 data = json.load(open("./data.json"))
-
 bot = cmds.Bot("NE!", None, case_insensitive=True)
+
 
 allCommands = [
     import_module(f"commands.{x.split('.')[0]}") for x in os.listdir("./commands/") if os.path.isfile(f"./commands/{x}")
@@ -138,8 +139,22 @@ async def on_message(message:discord.Message):
     elif isListOfWordsInString("give have can get want".split(), message.content.lower()):
         if isListOfWordsInString("admin mod moderator".split(), message.content.lower()):
             await message.channel.send("No you will not get mod perms.")
+    elif "testInteraction" == message.content:
+        await sendMessage(message.channel.id, content="This is a test button", components=[
+            {
+                "type":1,
+                "components":[
+                    {
+                        "type":2,
+                        "style":1,
+                        "label":"Button",
+                        "custom_id":"test"
+                    }
+                ]
+            }
+        ]
+        )
 
     await bot.process_commands(message)
 
-
-bot.run(data['token'])
+bot.run(data["token"])
