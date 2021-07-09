@@ -4,7 +4,6 @@ import asyncio
 import discord
 import requests
 from discord.ext import commands as cmds
-from flask import Flask, request, jsonify
 from importlib import import_module, reload
 
 data = json.load(open("./data.json"))
