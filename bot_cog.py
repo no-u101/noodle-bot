@@ -70,7 +70,7 @@ class NoodleBot(commands.Cog):
         if message.author.bot or message.author._user == self.bot.user:
             return
         
-        if message.content.startswith("!") and message.channel.id == 876302444408233994: # make sure it's in #bot-spam
+        if message.content.startswith("!") and message.channel.id in [876302444408233994, 861751223686397972]: # make sure it's in #bot-spam or mod bot commands channel
             # check if command exists
             command_used = message.content[1:].lower() # exclude !
             if command_used in self.cmds:
