@@ -11,6 +11,6 @@ async def command(ctx):
         r = requests.get(f'https://beatsaver.com/api/maps/id/{rand}')
         if r.status_code != 404:
             break
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
     
     await mess.edit(content=f"Your random ID is {rand}. https://beatsaver.com/maps/{rand}")
