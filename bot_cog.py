@@ -17,6 +17,8 @@ class ModLogger(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before:discord.Message, after:discord.Message):
+        if before.content == after.content or after.author == self.bot.user: # if self-edit / emb update
+            return
         embed = discord.Embed(title='Message Edited', description=f'"{before.content}" -> "{after.content}"\nFrom: {after.author}\nIn: <#{after.channel.id}>', color=discord.Colour.blurple())
         await self.logs_channel.send(embed=embed)
 
