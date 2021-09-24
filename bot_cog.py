@@ -1,3 +1,4 @@
+import asyncio
 import os
 import json
 import discord
@@ -5,6 +6,7 @@ from discord import message
 from discord.ext import commands
 from importlib import import_module, reload
 
+#region ModLogger
 class ModLogger(commands.Cog):
     """A mod logger for all forms of action that happen in the server."""
 
@@ -17,15 +19,16 @@ class ModLogger(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before:discord.Message, after:discord.Message):
-        if before.content == after.content or after.author == self.bot.user: # if self-edit / emb update
+        if before.content == after.content or after.author == self.bot.user or after.channel.id == 890689165442809888: # if self-edit / emb update
             return
         embed = discord.Embed(title='Message Edited', description=f'"{before.content}" -> "{after.content}"\nFrom: {after.author}\nIn: <#{after.channel.id}>', color=discord.Colour.blurple())
         await self.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message:discord.Message):
-        embed = discord.Embed(title='Message Deleted', description=f'"{message.content}"\nFrom: {message.author.nick}\nIn: <#{message.channel.id}>', color=discord.Colour.blurple())
-        await self.logs_channel.send(embed=embed)
+        if  message.channel.id == 890689165442809888:
+            embed = discord.Embed(title='Message Deleted', description=f'"{message.content}"\nFrom: {message.author.nick}\nIn: <#{message.channel.id}>', color=discord.Colour.blurple())
+            await self.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member:discord.Member):
@@ -37,9 +40,9 @@ class ModLogger(commands.Cog):
         
         embed = discord.Embed(title='Member Banned', description=f'{user} was banned.\nReason: {banLog.reason}\nBanned From: {banLog.user}', color=discord.Colour.red())
         await self.logs_channel.send(embed=embed)
+#endregion
 
-
-
+#region Main Bot Command Handling
 class NoodleBot(commands.Cog):
 
     cmds = [x[:-3].lower() for x in os.listdir('./commands') if x.endswith('.py')]
@@ -57,24 +60,31 @@ class NoodleBot(commands.Cog):
             import_module(f'commands.{x[:-3]}') for x in os.listdir('./commands') if x.endswith('.py')
         ]
 
+    async def statusLoop(self):
+        while True:
+            await self.bot.change_presence(activity=discord.Activity(name='your DM reports', type=discord.ActivityType.listening))
+            await asyncio.sleep(30)
+            await self.bot.change_presence(activity=discord.Game(name='Beat Saber Modcharts'))
+            await asyncio.sleep(30)
+
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{self.bot.user} is online and usable.")
-        await self.bot.change_presence(activity=discord.Game(name='Beat Saber Modcharts'))
-
+        print(f"{self.bot.user} is online and usable.\n{self.cmds}")
         modLogger:ModLogger = self.bot.get_cog('ModLogger')
         modLogger.logs_channel = self.bot.get_channel(848645733553012766)
         modLogger.noodle_server = self.bot.get_guild(841467564089147434)
+        await self.statusLoop()
 
     @commands.Cog.listener()    
     async def on_message(self, message:discord.Message):
         
-        if message.author.bot or message.author._user == self.bot.user:
+        if message.author.bot or message.author == self.bot:
             return
         
-        if message.content.startswith("!") and message.channel.id in [876302444408233994, 861751223686397972]: # make sure it's in #bot-spam or mod bot commands channel
+        if message.content.startswith("!") and int(message.channel.id) in [861751223686397972, 876302444408233994]: # make sure it's in #bot-spam or mod bot commands channel
             # check if command exists
-            command_used = message.content[1:].lower() # exclude !
+            command_used = message.content.split()[0][1:].lower() # exclude !
+            print(command_used)
             if command_used in self.cmds:
                 # re-import the command.py file and execute it
                 args = ()
@@ -89,10 +99,46 @@ class NoodleBot(commands.Cog):
                 return
 
         await self.bot.process_commands(message)
+#endregion
 
-bot = commands.Bot("!", case_insensitive=True, intents=discord.Intents.all())
+#region DMReport
+class DMReport(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot:commands.Bot = bot
+
+        
+
+    @commands.Cog.listener()
+    async def on_message(self, message:discord.Message):
+
+        reportChannel = self.bot.get_channel(891083452995223582)
+        
+        if message.author == self.bot.user:
+            return
+        
+        if str(message.channel.type) == "private":
+            emb = (discord.Embed(title="Report", color=discord.Color.blurple())
+                    .add_field(name='Reporter', value=message.author, inline=False)
+                    .add_field(name='Contents', value=message.content, inline=False))
+            if len(message.attachments) != 0:
+                emb.add_field(name='The following image was attached:', value=f'{message.attachments[0].filename}')
+                emb.set_image(url=message.attachments[0].url)
+            
+            await reportChannel.send(embed=emb)
+            await message.author.send("Thank you for your report! It has been recorded and the moderation team will look at it shortly.")
+            
+#endregion
+
+
+intents = discord.Intents.all()
+
+bot = commands.Bot("!", case_insensitive=True, intents=intents, help_command=None)
+
 bot.add_cog(NoodleBot(bot))
+bot.add_cog(DMReport(bot))
 bot.add_cog(ModLogger(bot))
+
 data = json.load(open('./data.json'))
 
 bot.run(data['token'])
