@@ -23,8 +23,7 @@ async def command(ctx):
 
     embed = (discord.Embed(title=data_ne['name'], description=data_ne['body'].replace('#', ''), color=discord.Color.blurple())
     .set_thumbnail(url=data_ne['author']['avatar_url'])
-    .add_field(name="Downloads", value=f'''[Download NE{data_ne["name"]}]({data_ne["assets"][0]["browser_download_url"]})
-[Download CJD{data_cjd["name"]}]({data_cjd["assets"][0]["browser_download_url"]})
-[Download Heck{data_heck["name"]}]({data_heck["assets"][0]["browser_download_url"]})'''))
+    .add_field(name="Downloads", value=f'''[Download CJD{data_cjd["name"]}]({data_cjd["assets"][0]["browser_download_url"]})
+[Download from Heck ({data_heck["name"]})]({data_heck["assets"][0]["browser_download_url"]})'''))
     
     await ctx.send(embed=embed)
