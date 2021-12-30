@@ -21,7 +21,7 @@ async def command(ctx):
     heck = requests.get(f"{baseUrl}/repos/Aeroluna/Heck/releases", headers=headers, params=p)
     data_heck = json.loads(heck.text)[0]
 
-    embed = (discord.Embed(title=data_ne['name'], description=data_ne['body'].replace('#', ''), color=discord.Color.blurple())
+    embed = (discord.Embed(title=data_ne['name'], description=data_heck['body'].replace('#', ''), color=discord.Color.blurple())
     .set_thumbnail(url=data_ne['author']['avatar_url'])
     .add_field(name="Downloads", value=f'''[Download CJD{data_cjd["name"]}]({data_cjd["assets"][0]["browser_download_url"]})
 [Download from Heck ({data_heck["name"]})]({data_heck["assets"][0]["browser_download_url"]})'''))
