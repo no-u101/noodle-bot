@@ -26,7 +26,7 @@ class ModLogger(commands.Cog):
 
     @commands.Cog.listener()
     async def  on_raw_message_delete(self, message:discord.raw_models.RawMessageDeleteEvent):
-        if  message.channel_id == 890689165442809888:
+        if message.channel_id != 890689165442809888:
             embed = discord.Embed(title='Message Deleted', description=f'"{message.content}"\nFrom: {message.author.nick}\nIn: <#{message.channel.id}>', color=discord.Colour.blurple())
             await self.logs_channel.send(embed=embed)
 
