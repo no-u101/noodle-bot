@@ -9,6 +9,7 @@ async def command(ctx:commands.Context, *name:str):
     if not macro.get(name):
         await ctx.send("That macro doesn't exist.")
         return
+    print(' '.join(name))
     data = macro[' '.join(name)]
     embed = discord.Embed(title=data['title'], description=data['content'], color=discord.Colour.blurple())
     await ctx.send(embed=embed)
