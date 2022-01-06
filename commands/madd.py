@@ -5,13 +5,18 @@ import discord
 from discord.ext import commands
 
 
-async def command(ctx:commands.Context, name:str, title:str, *content:str): # star because every single word and shit will be seperated
+async def command(ctx:commands.Context, *jsondata): # star because every single word and shit will be seperated
     if not any([y in "support" for y in [x.name.lower() for x in ctx.author.roles]]):
         return
+    data = ' '.join(jsondata)
+    info = json.loads(data)
+    name = info['name']
+    title = info['title']
+    content = info['content']
 
     macros = json.load(open('./macros.json'))
     macros[name] = {
         "title":title,
-        "content":' '.join(content)
+        "content":content
     }
     json.dump(macros, open('./macros.json', 'w', encoding='utf-8'))
