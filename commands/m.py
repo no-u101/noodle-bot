@@ -12,5 +12,7 @@ async def command(ctx:commands.Context, *name:str):
         return
     data = macro[callname]
     embed = discord.Embed(title=data['title'], description=data['content'], color=discord.Colour.blurple())
+    if 'image' in data.keys():
+        embed.set_image(data['image'])
     await ctx.send(embed=embed)
     await ctx.message.delete()
