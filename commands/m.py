@@ -6,11 +6,11 @@ from discord.ext import commands
 
 async def command(ctx:commands.Context, *name:str):
     macro = json.load(open('./macros.json'))
-    if not macro.get(name):
+    callname = ' '.join(name)
+    if not macro.get(callname):
         await ctx.send("That macro doesn't exist.")
         return
-    print(' '.join(name))
-    data = macro[' '.join(name)]
+    data = macro[callname]
     embed = discord.Embed(title=data['title'], description=data['content'], color=discord.Colour.blurple())
     await ctx.send(embed=embed)
     await ctx.message.delete()
