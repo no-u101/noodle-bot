@@ -15,8 +15,12 @@ async def command(ctx:commands.Context, *jsondata): # star because every single 
     content = info['content']
 
     macros = json.load(open('./macros.json'))
+    if name in macros.keys():
+        await ctx.send("That macro already exists.")
+        return
     macros[name] = {
         "title":title,
         "content":content
     }
     json.dump(macros, open('./macros.json', 'w', encoding='utf-8'))
+    await ctx.send("Success adding macro.")
