@@ -84,8 +84,9 @@ class NoodleBot(commands.Cog):
         
         if message.author.bot or message.author == self.bot:
             return
-        
-        if message.content.startswith("!") and int(message.channel.id) in [861751223686397972, 876302444408233994, 928447242682118194]: # make sure it's in #bot-spam or mod bot commands channel
+
+        if message.content.startswith("!") and int(message.channel.id) in [861751223686397972, 876302444408233994, 928447242682118194, 894248901257859082]:
+            await self.update_commands()
             # check if command exists
             command_used = message.content.split()[0][1:].lower() # exclude !
             print(command_used)
@@ -97,7 +98,6 @@ class NoodleBot(commands.Cog):
                 else:
                     args = tuple(message.content.split()[1:])
                 
-                await self.update_commands()
                 self.command_functions[self.cmds.index(command_used)] = reload(self.command_functions[self.cmds.index(command_used)])
                 await self.command_functions[self.cmds.index(command_used)].command(await self.bot.get_context(message), *args)
                 return
