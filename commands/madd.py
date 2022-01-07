@@ -10,9 +10,17 @@ async def command(ctx:commands.Context, *jsondata): # star because every single 
         return
     data = ' '.join(jsondata)
     info:dict = json.loads(data)
-    missing = [x for x in info.keys() if x not in 'title name content'.split()]
-    if missing:
-        await ctx.send(f"Missing one or more required parameters: {' '.join(missing)}")
+    required = [
+        'title',
+        'name',
+        'content'
+    ]
+    # for x in list(info.keys()):
+    #     if x in required:
+    #         required.remove(x)
+    _ = [required.remove(x) for x in list(info.keys()) if x in required]
+    if required:
+        await ctx.send(f"Missing one or more required parameters: {' '.join(required)}")
         return
     name = info['name']
 
