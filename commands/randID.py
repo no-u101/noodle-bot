@@ -1,5 +1,6 @@
 import random
 import asyncio
+import json
 import requests # check to see if the map exists
 
 async def command(ctx):
