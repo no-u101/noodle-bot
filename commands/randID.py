@@ -7,6 +7,8 @@ async def command(ctx):
     mess = await ctx.send(f"Finding random existing map... Attempt {attempts+1}")
     rand = hex(random.randint(1,0xfffff))[2:]
     r = requests.get(f'https://beatsaver.com/api/maps/id/{rand}')
+    rj = r.json()
+    automapper = rj["automapper"]
     if r.status_code == 404:
         while True:
             rand = hex(random.randint(1,0xfffff))[2:]
