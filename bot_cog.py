@@ -85,7 +85,7 @@ class NoodleBot(commands.Cog):
         if message.author.bot or message.author == self.bot:
             return
 
-        if message.content.startswith("!") and int(message.channel.id) in [861751223686397972, 876302444408233994, 928447242682118194, 894248901257859082]:
+        if message.content.startswith("!"):
             await self.update_commands()
             # check if command exists
             command_used = message.content.split()[0][1:].lower() # exclude !
@@ -100,6 +100,14 @@ class NoodleBot(commands.Cog):
                 
                 self.command_functions[self.cmds.index(command_used)] = reload(self.command_functions[self.cmds.index(command_used)])
                 await self.command_functions[self.cmds.index(command_used)].command(await self.bot.get_context(message), *args)
+                return
+
+        # prevent code below from being run if user is an adim. this means anything below will be accessible to admin only.
+        if any(discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")):
+            
+            if "discord.gg/" in message.content:
+                await message.channel.send(f"<@{message.author.id}> no invites are allowed in this server.")
+                await message.delete()
                 return
 
         await self.bot.process_commands(message)
