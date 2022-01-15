@@ -103,7 +103,7 @@ class NoodleBot(commands.Cog):
                 return
 
         # prevent code below from being run if user is an adim. this means anything below will be accessible to admin only.
-        if not any(discord.utils.get(message.author.roles, name="Administrator") is None, discord.utils.get(message.author.roles, name="Staff") is None):
+        if not any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")]):
             
             if "discord.gg/" in message.content:
                 await message.channel.send(f"<@{message.author.id}> no invites are allowed in this server.")
