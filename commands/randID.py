@@ -1,6 +1,5 @@
 import random
 import asyncio
-import json # to load json data
 import requests # check to see if the map exists
 
 async def command(ctx):
@@ -13,7 +12,7 @@ async def command(ctx):
             rand = hex(random.randint(1,0xfffff))[2:]
             r = requests.get(f'https://beatsaver.com/api/maps/id/{rand}')
             rj = r.json()
-            if r.status_code != 404 and rj["automapper"] == False:
+            if r.status_code != 404 and rj['metadata']['levelAuthorName'] != 'Beat Sage':
                 break
             attempts += 1
             await mess.edit(content=f"Finding random existing map... Attempt {attempts+1}")
