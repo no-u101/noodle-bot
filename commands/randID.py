@@ -11,7 +11,8 @@ async def command(ctx):
         while True:
             rand = hex(random.randint(1,0xfffff))[2:]
             r = requests.get(f'https://beatsaver.com/api/maps/id/{rand}')
-            if r.status_code != 404:
+            rj = r.json()
+            if r.status_code != 404 and rj['metadata']['levelAuthorName'] != 'Beat Sage':
                 break
             attempts += 1
             await mess.edit(content=f"Finding random existing map... Attempt {attempts+1}")
