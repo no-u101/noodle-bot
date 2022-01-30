@@ -24,13 +24,15 @@ class ModLogger(commands.Cog):
         embed = discord.Embed(title='Message Edited', description=f'"{before.content}" -> "{after.content}"\nFrom: {after.author}\nIn: <#{after.channel.id}>', color=discord.Colour.blurple())
         await self.logs_channel.send(embed=embed)
         
-        # prevent code below from being run if user is an admin. this means anything below will be accessible to admin only.
         if not any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")]):
-            
-            if "discord.gg/" in after.content:
-                await message.channel.send(f"<@{message.author.id}> no invites are allowed in this server.")
-                await message.delete()
-                return
+            # ^ stays the same as the other one 
+            invite="discord.gg/"
+            if invite in message.content:
+                if "discord.gg/noodleextensions" in message.content:
+                    await message.reply(":petthene:")
+                else:
+                    await message.channel.send(f"<@{message.author.id}> invites are not allowed")
+                    await message.delete()
 
     @commands.Cog.listener()
     async def  on_raw_message_delete(self, message:discord.raw_models.RawMessageDeleteEvent):
