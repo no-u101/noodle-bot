@@ -24,10 +24,10 @@ class ModLogger(commands.Cog):
         embed = discord.Embed(title='Message Edited', description=f'"{before.content}" -> "{after.content}"\nFrom: {after.author}\nIn: <#{after.channel.id}>', color=discord.Colour.blurple())
         await self.logs_channel.send(embed=embed)
         
-        ### temporary spot until mega replys
+
         def admin_staff(admin:str="Administrator", staff:str="Staff"):
             return any([discord.utils.get(message.author.roles, name=admin), discord.utils.get(message.author.roles, name=staff)])
-        ### @megamaz#1020
+
         
         if not admin_staff():
             invite="discord.gg/"
