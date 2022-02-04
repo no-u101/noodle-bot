@@ -24,8 +24,12 @@ class ModLogger(commands.Cog):
         embed = discord.Embed(title='Message Edited', description=f'"{before.content}" -> "{after.content}"\nFrom: {after.author}\nIn: <#{after.channel.id}>', color=discord.Colour.blurple())
         await self.logs_channel.send(embed=embed)
         
-        if not any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")]):
-            # ^ stays the same as the other one 
+        ### temporary spot until mega replys
+        def admin_staff(admin:str="Administrator", staff:str="Staff"):
+            return any([discord.utils.get(message.author.roles, name=admin), discord.utils.get(message.author.roles, name=staff)])
+        ### @megamaz#1020
+        
+        if not admin_staff():
             invite="discord.gg/"
             if invite in message.content:
                 if "discord.gg/noodleextensions" in message.content:
