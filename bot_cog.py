@@ -15,6 +15,9 @@ class ModLogger(commands.Cog):
 
     def __init__(self, bot):
         self.bot:commands.Bot = bot
+            
+    def admin_staff():
+        return any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")])
     
 
     @commands.Cog.listener()
@@ -25,10 +28,6 @@ class ModLogger(commands.Cog):
         await self.logs_channel.send(embed=embed)
         
 
-        def admin_staff(admin:str="Administrator", staff:str="Staff"):
-            return any([discord.utils.get(message.author.roles, name=admin), discord.utils.get(message.author.roles, name=staff)])
-
-        
         if not admin_staff():
             invite="discord.gg/"
             if invite in message.content:
@@ -38,6 +37,7 @@ class ModLogger(commands.Cog):
                     await message.channel.send(f"<@{message.author.id}> invites are not allowed")
                     await message.delete()
 
+                    
     @commands.Cog.listener()
     async def  on_raw_message_delete(self, message:discord.raw_models.RawMessageDeleteEvent):
         if message.channel_id != 890689165442809888:
