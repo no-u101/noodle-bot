@@ -15,8 +15,9 @@ class ModLogger(commands.Cog):
 
     def __init__(self, bot):
         self.bot:commands.Bot = bot
-            
-    def admin_staff():
+
+    @staticmethod     
+    def admin_staff(message: discord.Message):
         return any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")])
     
 
@@ -28,14 +29,14 @@ class ModLogger(commands.Cog):
         await self.logs_channel.send(embed=embed)
         
 
-        if not admin_staff():
+        if not self.admin_staff(after):
             invite="discord.gg/"
-            if invite in message.content:
-                if "discord.gg/noodleextensions" in message.content:
-                    await message.reply(":petthene:")
+            if invite in after.content:
+                if "discord.gg/noodleextensions" in after.content:
+                    await after.reply(":petthene:")
                 else:
-                    await message.channel.send(f"<@{message.author.id}> invites are not allowed")
-                    await message.delete()
+                    await after.channel.send(f"<@{after.author.id}> invites are not allowed")
+                    await after.delete()
 
                     
     @commands.Cog.listener()
@@ -117,7 +118,7 @@ class NoodleBot(commands.Cog):
                 return
 
         # prevent code below from being run if user is an admin. this means anything below will be accessible to admin only.
-        if not any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")]):
+        if not ModLogger.admin_staff(message):
             
             if "discord.gg/" in message.content:
                 await message.channel.send(f"<@{message.author.id}> no invites are allowed in this server.")
