@@ -2,7 +2,6 @@ import asyncio
 import os
 import json
 import discord
-from discord import message
 from discord.ext import commands
 from importlib import import_module, reload
 
@@ -55,7 +54,7 @@ class ModLogger(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_ban(self, guild:discord.Guild, user:discord.User):
-        banLog:discord.AuditLogEntry = [x async for x in self.noodle_server.audit_logs(limit=1)][0] # I HATE THIS 
+        banLog:discord.AuditLogEntry = list(self.noodle_server.audit_logs(limit=1))[0] # i hate this less than before
         
         embed = discord.Embed(title='Member Banned', description=f'{user} was banned.\nReason: {banLog.reason}\nBanned From: {banLog.user}', color=discord.Colour.red())
         await self.logs_channel.send(embed=embed)
@@ -166,6 +165,6 @@ bot.add_cog(NoodleBot(bot))
 bot.add_cog(DMReport(bot))
 bot.add_cog(ModLogger(bot))
 
-data = json.load(open('./data.json'))
+data = json.load(open('./data.json', encoding='utf-8'))
 
 bot.run(data['token'])
