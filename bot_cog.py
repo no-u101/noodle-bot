@@ -15,6 +15,9 @@ class ModLogger(commands.Cog):
 
     def __init__(self, bot):
         self.bot:commands.Bot = bot
+            
+    def admin_staff():
+        return any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")])
     
 
     @commands.Cog.listener()
@@ -23,7 +26,18 @@ class ModLogger(commands.Cog):
             return
         embed = discord.Embed(title='Message Edited', description=f'"{before.content}" -> "{after.content}"\nFrom: {after.author}\nIn: <#{after.channel.id}>', color=discord.Colour.blurple())
         await self.logs_channel.send(embed=embed)
+        
 
+        if not admin_staff():
+            invite="discord.gg/"
+            if invite in message.content:
+                if "discord.gg/noodleextensions" in message.content:
+                    await message.reply(":petthene:")
+                else:
+                    await message.channel.send(f"<@{message.author.id}> invites are not allowed")
+                    await message.delete()
+
+                    
     @commands.Cog.listener()
     async def  on_raw_message_delete(self, message:discord.raw_models.RawMessageDeleteEvent):
         if message.channel_id != 890689165442809888:
@@ -102,7 +116,7 @@ class NoodleBot(commands.Cog):
                 await self.command_functions[self.cmds.index(command_used)].command(await self.bot.get_context(message), *args)
                 return
 
-        # prevent code below from being run if user is an adim. this means anything below will be accessible to admin only.
+        # prevent code below from being run if user is an admin. this means anything below will be accessible to admin only.
         if not any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")]):
             
             if "discord.gg/" in message.content:
