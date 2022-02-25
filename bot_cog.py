@@ -29,13 +29,10 @@ class ModLogger(commands.Cog):
         
 
         if not self.admin_staff(after):
-            invite="discord.gg/"
+            invite = "discord.gg/"
             if invite in after.content:
-                if "discord.gg/noodleextensions" in after.content:
-                    await after.reply(":petthene:")
-                else:
-                    await after.channel.send(f"<@{after.author.id}> invites are not allowed")
-                    await after.delete()
+                await after.channel.send(f"<@{after.author.id}> invites are not allowed")
+                await after.delete()
 
                     
     @commands.Cog.listener()
