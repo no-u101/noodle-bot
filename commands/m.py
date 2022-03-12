@@ -15,4 +15,4 @@ async def command(ctx:commands.Context, *name:str):
     if 'image' in data.keys():
         embed.set_image(url=data['image'])
     await ctx.send(embed=embed)
-    await ctx.message.delete()
+    # await ctx.message.delete()
