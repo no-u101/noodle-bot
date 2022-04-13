@@ -29,7 +29,7 @@ class ModLogger(commands.Cog):
         await self.logs_channel.send(embed=embed)
         
 
-        if (not self.admin_staff(after)) or (not discord.utils.get(after.author.roles, name='Support')):
+        if (not self.admin_staff(after)) and (not discord.utils.get(after.author.roles, name='Support')):
             invite = "discord.gg/"
             if invite in after.content:
                 await after.channel.send(f"<@{after.author.id}> invites are not allowed")
