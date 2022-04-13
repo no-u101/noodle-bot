@@ -17,9 +17,10 @@ class ModLogger(commands.Cog):
 
     @staticmethod     
     def admin_staff(message: discord.Message):
-        return any([discord.utils.get(message.author.roles, name="Administrator"), discord.utils.get(message.author.roles, name="Staff")])
+        return any([discord.utils.get(message.author.roles, name="Administrator"), 
+                    discord.utils.get(message.author.roles, name="Staff")]
+                )
     
-
     @commands.Cog.listener()
     async def on_message_edit(self, before:discord.Message, after:discord.Message):
         if before.content == after.content or after.author == self.bot.user or after.channel.id == 890689165442809888: # if self-edit / emb update
@@ -28,7 +29,7 @@ class ModLogger(commands.Cog):
         await self.logs_channel.send(embed=embed)
         
 
-        if not self.admin_staff(after):
+        if (not self.admin_staff(after)) or (not discord.utils.get(after.author.roles, name='Support')):
             invite = "discord.gg/"
             if invite in after.content:
                 await after.channel.send(f"<@{after.author.id}> invites are not allowed")
@@ -116,7 +117,7 @@ class NoodleBot(commands.Cog):
         # prevent code below from being run if user is an admin. this means anything below will be accessible to admin only.
         if not ModLogger.admin_staff(message):
             
-            if "discord.gg/" in message.content:
+            if "discord.gg/" in message.content and not discord.utils.get(message.author.roles, name='Support'):
                 await message.channel.send(f"<@{message.author.id}> no invites are allowed in this server.")
                 await message.delete()
                 return
