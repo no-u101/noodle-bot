@@ -41,9 +41,15 @@ class ModLogger(commands.Cog):
         if message.channel_id != 890689165442809888:
             if message.cached_message:
                 embed = discord.Embed(title='Message Deleted', description=f'"{message.cached_message.content}"\nFrom: {message.cached_message.author}\nIn: <#{message.channel_id}>', color=discord.Colour.blurple())
+                if len(message.attachments) != 0:
+                    embed.add_field(name='The following image was attached:', value=f'{message.attachments[0].filename}')
+                    embed.set_image(url=message.attachments[0].url)
                 await self.logs_channel.send(embed=embed)
             else:
                 embed = discord.Embed(title='Message Deleted', description=f'Message content unknown.\nFrom: unknown.\nIn: <#{message.channel_id}>', color=discord.Colour.blurple())
+                if len(message.attachments) != 0:
+                    embed.add_field(name='Images', value=f'{message.attachments[0].filename}')
+                    embed.set_image(url=message.attachments[0].url)
                 await self.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
