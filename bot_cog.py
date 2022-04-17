@@ -141,12 +141,21 @@ class DMReport(commands.Cog):
             return
         
         if str(message.channel.type) == "private":
-            emb = (discord.Embed(title="Report", color=discord.Color.blurple())
-                    .add_field(name='Reporter', value=message.author, inline=False)
-                    .add_field(name='Contents', value=message.content, inline=False))
-            if len(message.attachments) != 0:
-                emb.add_field(name='The following image was attached:', value=f'{message.attachments[0].filename}')
-                emb.set_image(url=message.attachments[0].url)
+            if message.content == "":
+                if len(message.attachments) != 0:
+                    emb = (discord.Embed(title="Report", color=discord.Color.blurple())
+                            .add_field(name='Reporter', value=message.author, inline=False)
+                            .add_field(name='Contents', value="no message content", inline=False))
+                            .add_field(name='The following image was attached:', value=f'{message.attachments[0].filename}')
+                            .set_image(url=message.attachments[0].url)
+                
+            else:
+                emb = (discord.Embed(title="Report", color=discord.Color.blurple())
+                        .add_field(name='Reporter', value=message.author, inline=False)
+                        .add_field(name='Contents', value=message.content, inline=False))
+                if len(message.attachments) != 0:
+                    emb.add_field(name='The following image was attached:', value=f'{message.attachments[0].filename}')
+                    emb.set_image(url=message.attachments[0].url)
             
             await reportChannel.send(embed=emb)
             await message.author.send("Thank you for your report! It has been recorded and the moderation team will look at it shortly.")
