@@ -141,9 +141,10 @@ class DMReport(commands.Cog):
             return
         
         if str(message.channel.type) == "private":
+            message_content = "*no contents*" if not message.content else message.content            
             emb = (discord.Embed(title="Report", color=discord.Color.blurple())
                     .add_field(name='Reporter', value=message.author, inline=False)
-                    .add_field(name='Contents', value=message.content, inline=False))
+                    .add_field(name='Contents', value=message_content, inline=False))
             if len(message.attachments) != 0:
                 emb.add_field(name='The following image was attached:', value=f'{message.attachments[0].filename}')
                 emb.set_image(url=message.attachments[0].url)
