@@ -24,4 +24,5 @@ async def command(ctx:Context, uid, *reason):
     
     json.dump(warns, open("./warns.json", 'w', encoding='utf-8'))
     user = ctx.guild.get_member(int(uid))
+    await user.send(f"you were warned in Noodle Extensions Community for '{reason}'")
     await ctx.send(f"Warned {user} for '{reason}'")
